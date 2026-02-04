@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectDB } from './config/database';
+import { connectDB, getDBStatus } from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +37,15 @@ app.get('/', (req, res) => {
 // Health check route
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// DB status route (debug)
+app.get('/db-status', (req, res) => {
+  res.json({
+    status: 'OK',
+    db: getDBStatus(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Start server

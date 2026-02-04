@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -375,17 +376,17 @@ export default function Home() {
             <div>
               <h4 className="text-sm font-semibold text-white mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-green-50">
-                <li><a href="#" className="hover:text-white transition-colors">Hospital Finder</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Anonymous Reporting</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Quality Ratings</a></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Hospital Finder</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Anonymous Reporting</Link></li>
+                <li><Link href="/quality-ratings" className="hover:text-white transition-colors">Quality Ratings</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-semibold text-white mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-green-50">
-                <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#problem" className="hover:text-white transition-colors">The Problem</a></li>
+                <li><Link href="#faq" className="hover:text-white transition-colors">FAQ</Link></li>
+                <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
+                <li><Link href="#problem" className="hover:text-white transition-colors">The Problem</Link></li>
               </ul>
             </div>
             <div>
