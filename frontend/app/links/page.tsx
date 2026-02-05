@@ -100,6 +100,12 @@ export default function Statistics() {
                 Ratings
               </Link>
               <Link 
+                href="/find-hospitals"
+                className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
+              >
+                Find Hospitals
+              </Link>
+              <Link 
                 href="/links"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
