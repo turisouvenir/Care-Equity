@@ -255,10 +255,10 @@ export default function HospitalDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col w-full overflow-x-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-green-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 bg-white border-b border-green-200 shadow-sm w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex items-center justify-between h-16">
             <button
               onClick={() => router.push('/')}
@@ -298,7 +298,7 @@ export default function HospitalDetail() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
         {/* Action Buttons */}
         <div className="flex items-center gap-4 mb-6 flex justify-between">
           <Link 
@@ -384,7 +384,7 @@ export default function HospitalDetail() {
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Key Metrics */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Metrics</h2>
@@ -433,7 +433,7 @@ export default function HospitalDetail() {
         )}
 
         {activeTab === 'reviews' && (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             {reviews.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                 <p className="text-gray-500 mb-4">No reviews yet for this hospital.</p>
@@ -446,7 +446,7 @@ export default function HospitalDetail() {
               </div>
             ) : (
               reviews.map((review) => (
-                <div key={review._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div key={review._id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center">
@@ -456,7 +456,7 @@ export default function HospitalDetail() {
                     </div>
                     <span className="text-sm text-gray-500">{formatDate(review.createdAt)}</span>
                   </div>
-                  <p className="text-gray-700 leading-relaxed mb-3">{review.comment}</p>
+                  <p className="text-gray-700 leading-relaxed mb-3 break-words">{review.comment}</p>
                   <div className="mt-3 pt-3 border-t border-gray-100">
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className="text-xs text-gray-500">Anonymous Review</span>
@@ -488,37 +488,40 @@ export default function HospitalDetail() {
         )}
 
         {activeTab === 'ratings' && (
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Rating Distribution Chart */}
             {ratingDistributionData.length > 0 && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full overflow-hidden">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Review Rating Distribution</h2>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={ratingDistributionData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={(entry: any) => `${entry.name}: ${entry.value}`}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {ratingDistributionData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="w-full">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={ratingDistributionData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={(entry: any) => `${entry.name}: ${entry.value}`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {ratingDistributionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             )}
 
             {/* Demographic Comparison Chart */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full overflow-hidden">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Demographic Comparison</h2>
-              <ResponsiveContainer width="100%" height={300}>
+              <div className="w-full overflow-hidden">
+                <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={demographicComparisonData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="group" />
@@ -528,6 +531,7 @@ export default function HospitalDetail() {
                   <Bar dataKey="score" fill="#10b981" name="Score" />
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </div>
 
             {/* Grade Comparison */}
@@ -549,8 +553,8 @@ export default function HospitalDetail() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-green-500 text-white py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-green-500 text-white py-12 mt-auto w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="border-t border-green-500 pt-8 text-center">
             <p className="text-sm text-green-50">
               © 2026 Care Equity. All rights reserved.
