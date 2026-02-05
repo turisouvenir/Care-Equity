@@ -12,7 +12,7 @@ export interface IPatientReport extends Document {
   hospitalId: string;      // Foreign key: links to Hospital._id (e.g., "HOSP_001")
   rating: number;          // Patient's rating (1-5 scale, where 1 is poor and 5 is excellent)
   comment: string;         // Patient's written review/comment
-  race?: string;            // Patient's race/ethnicity (for disparity tracking)
+  race: string;            // Patient's race/ethnicity (for disparity tracking) - REQUIRED
   experienceType: string;  // Type of experience: 'Compliment', 'Complaint', 'Suggestion', 'General Feedback'
   createdAt: Date;         // When the report was submitted
   isAnonymous: boolean;    // Always true for anonymous reports
