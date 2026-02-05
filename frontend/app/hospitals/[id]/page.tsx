@@ -217,7 +217,7 @@ export default function HospitalDetail() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Hospital Not Found</h1>
-          <Link href="/quality-ratings-copy" className="text-green-600 hover:text-green-700">
+          <Link href="/quality-ratings" className="text-green-600 hover:text-green-700">
             ← Back to Hospital List
           </Link>
         </div>
@@ -276,7 +276,7 @@ export default function HospitalDetail() {
                 Home
               </Link>
               <Link 
-                href="/quality-ratings-copy"
+                href="/quality-ratings"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
                 Ratings
@@ -302,7 +302,7 @@ export default function HospitalDetail() {
         {/* Action Buttons */}
         <div className="flex items-center gap-4 mb-6 flex justify-between">
           <Link 
-            href="/quality-ratings-copy"
+            href="/quality-ratings"
             className="inline-flex items-center px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200 border border-gray-200 hover:border-green-300"
           >
             ← Back to List

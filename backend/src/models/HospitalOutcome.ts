@@ -39,5 +39,11 @@ const HospitalOutcomeSchema = new Schema<IHospitalOutcome>(
   { timestamps: true }
 );
 
-const HospitalOutcome = mongoose.model<IHospitalOutcome>('HospitalOutcome', HospitalOutcomeSchema);
+// Create and export the Mongoose model
+// Explicitly specify collection name to avoid duplicates
+const HospitalOutcome = mongoose.model<IHospitalOutcome>(
+  'HospitalOutcome', 
+  HospitalOutcomeSchema,
+  'HospitalOutcomes'  // Explicit collection name (capital H and S)
+);
 export default HospitalOutcome;

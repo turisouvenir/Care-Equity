@@ -45,7 +45,7 @@ export default function Home() {
                 Home
               </Link>
               <Link 
-                href="/quality-ratings-copy"
+                href="/quality-ratings"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
                 Ratings
@@ -134,7 +134,7 @@ export default function Home() {
                 }}
               >
                 <Link 
-                  href="/quality-ratings-copy"
+                  href="/quality-ratings"
                   className="px-8 py-4 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700 transition-all hover:scale-105 shadow-lg text-center"
                 >
                   Check ratings for a hospital
@@ -453,7 +453,6 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-green-50">
                 <li><Link href="/" className="hover:text-white transition-colors">Hospital Finder</Link></li>
                 <li><Link href="/" className="hover:text-white transition-colors">Anonymous Reporting</Link></li>
-                <li><Link href="/quality-ratings" className="hover:text-white transition-colors">Quality Ratings</Link></li>
               </ul>
             </div>
             <div>
