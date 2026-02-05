@@ -27,6 +27,13 @@ interface HospitalRating {
   };
 }
 
+interface HospitalSentiment {
+  sentiment: 'positive' | 'neutral' | 'negative';
+  summary: string;
+  averageRating: number;
+  totalReviews: number;
+}
+
 /**
  * QualityRatings Component
  * 
@@ -48,6 +55,8 @@ export default function QualityRatings() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table'); // View mode (table or cards)
   const [loading, setLoading] = useState<boolean>(true);                  // Loading state
   const [locations, setLocations] = useState<string[]>([]);               // Unique locations for dropdown
+  const [sentiments, setSentiments] = useState<Record<string, HospitalSentiment>>({}); // Sentiment data by hospital ID
+  const [loadingSentiments, setLoadingSentiments] = useState<Record<string, boolean>>({}); // Loading state for sentiments
 
   /**
    * useEffect: Fetch ratings from backend API
@@ -75,6 +84,9 @@ export default function QualityRatings() {
             new Set(result.data.map((r: HospitalRating) => r.location))
           ).sort() as string[];
           setLocations(uniqueLocations); // Populate dropdown options
+          
+          // Fetch sentiments for all hospitals
+          fetchAllSentiments(result.data);
         } else {
           console.warn('No hospital data received from API');
         }
@@ -88,6 +100,42 @@ export default function QualityRatings() {
 
     fetchRatings();
   }, []); // Empty array = run only once on mount
+
+  /**
+   * Fetch sentiment for all hospitals
+   */
+  const fetchAllSentiments = async (hospitalRatings: HospitalRating[]) => {
+    const sentimentMap: Record<string, HospitalSentiment> = {};
+    const loadingMap: Record<string, boolean> = {};
+    
+    hospitalRatings.forEach(rating => {
+      loadingMap[rating.hospitalId] = true;
+    });
+    setLoadingSentiments(loadingMap);
+    
+    // Fetch sentiments in parallel
+    const promises = hospitalRatings.map(async (rating) => {
+      try {
+        const response = await fetch(`http://localhost:5001/hospitals/${rating.hospitalId}/sentiment`);
+        const result = await response.json();
+        if (result.success && result.data) {
+          sentimentMap[rating.hospitalId] = result.data;
+        }
+      } catch (error) {
+        console.error(`Error fetching sentiment for ${rating.hospitalId}:`, error);
+      }
+    });
+    
+    await Promise.all(promises);
+    
+    // Update loading states
+    const updatedLoadingMap: Record<string, boolean> = {};
+    hospitalRatings.forEach(rating => {
+      updatedLoadingMap[rating.hospitalId] = false;
+    });
+    setLoadingSentiments(updatedLoadingMap);
+    setSentiments(sentimentMap);
+  };
 
   /**
    * Helper: Check if hospital has significant disparity
@@ -313,34 +361,28 @@ export default function QualityRatings() {
             {/* Navigation - Right Side */}
             <nav className="hidden md:flex items-center gap-1">
               <Link 
-                href="/#problem" 
+                href="/"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
-                The Problem
+                Home
               </Link>
               <Link 
-                href="/#features" 
+                href="/quality-ratings"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
-                Features
+                Ratings
               </Link>
               <Link 
-                href="/#faq" 
+                href="/links"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
-                FAQ
+                Newsletters
               </Link>
               <Link 
                 href="/report"
-                className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200 border border-gray-300 hover:border-green-300"
-              >
-                Submit Anonymous Issue
-              </Link>
-              <Link 
-                href="/"
                 className="ml-2 px-4 py-2 bg-green-600 text-white rounded-md text-base font-medium hover:bg-green-700 transition-all duration-200 shadow-sm"
               >
-                GET STARTED
+                Submit Anonymous Form
               </Link>
             </nav>
           </div>
@@ -683,10 +725,10 @@ export default function QualityRatings() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Hospital Name</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Location</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Overall Rating</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Disparity Alert</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Black Patients</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">White Patients</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Hispanic Patients</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Reviews</th>
                       </tr>
                     </thead>
                     {/* Table Body - Renders filtered ratings */}
@@ -710,10 +752,10 @@ export default function QualityRatings() {
                               animation: `fadeIn 0.3s ease-in-out ${index * 0.05}s both`,
                             }}
                           >
-                            {/* Hospital Name - Clickable link to location */}
+                            {/* Hospital Name - Clickable link to exact hospital address */}
                             <td className="px-6 py-4">
                               <a
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rating.location)}`}
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rating.name}, ${rating.location}`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="group relative inline-flex items-center gap-2 text-sm text-gray-900 font-medium hover:text-green-600 transition-all duration-300 cursor-pointer"
@@ -744,11 +786,6 @@ export default function QualityRatings() {
                               </span>
                             </td>
                             
-                            {/* Disparity Alert Badge */}
-                            <td className="px-6 py-4">
-                              {getDisparityBadge(rating)}
-                            </td>
-                            
                             {/* Black Patients Rating Badge */}
                             <td className="px-6 py-4">
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getGradeColor(getGroupGrade(rating.byGroup, 'Black'))}`}>
@@ -768,6 +805,31 @@ export default function QualityRatings() {
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getGradeColor(getGroupGrade(rating.byGroup, 'Hispanic'))}`}>
                                 {getGroupGrade(rating.byGroup, 'Hispanic')}
                               </span>
+                            </td>
+                            
+                            {/* Reviews & Sentiment */}
+                            <td className="px-6 py-4">
+                              {loadingSentiments[rating.hospitalId] ? (
+                                <span className="text-xs text-gray-400">Loading...</span>
+                              ) : sentiments[rating.hospitalId] ? (
+                                <div className="flex flex-col gap-1">
+                                  <Link
+                                    href={`/hospitals/${rating.hospitalId}`}
+                                    className="text-sm text-green-600 hover:text-green-700 font-medium"
+                                  >
+                                    {sentiments[rating.hospitalId].totalReviews} review{sentiments[rating.hospitalId].totalReviews !== 1 ? 's' : ''}
+                                  </Link>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                    sentiments[rating.hospitalId].sentiment === 'positive' ? 'bg-green-100 text-green-800' :
+                                    sentiments[rating.hospitalId].sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                                    'bg-yellow-100 text-yellow-800'
+                                  }`}>
+                                    {sentiments[rating.hospitalId].sentiment}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-gray-400">No reviews</span>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -796,7 +858,7 @@ export default function QualityRatings() {
                     >
                       <div className="flex items-start justify-between mb-4">
                         <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rating.location)}`}
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${rating.name}, ${rating.location}`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="group relative inline-flex items-center gap-2 text-lg font-semibold text-gray-900 pr-2 hover:text-green-600 transition-all duration-300 cursor-pointer"
@@ -816,7 +878,6 @@ export default function QualityRatings() {
                             View on Maps
                           </span>
                         </a>
-                        {getDisparityBadge(rating)}
                       </div>
                       <p className="text-sm text-gray-600 mb-4">{rating.location}</p>
                       <div className="space-y-2 mb-4">
@@ -844,6 +905,30 @@ export default function QualityRatings() {
                             {getGroupGrade(rating.byGroup, 'Hispanic')}
                           </span>
                         </div>
+                      </div>
+                      {/* Reviews & Sentiment */}
+                      <div className="mt-4 pt-4 border-t border-green-100">
+                        {loadingSentiments[rating.hospitalId] ? (
+                          <span className="text-xs text-gray-400">Loading reviews...</span>
+                        ) : sentiments[rating.hospitalId] ? (
+                          <div className="flex items-center justify-between">
+                            <Link
+                              href={`/hospitals/${rating.hospitalId}`}
+                              className="text-sm text-green-600 hover:text-green-700 font-medium"
+                            >
+                              {sentiments[rating.hospitalId].totalReviews} review{sentiments[rating.hospitalId].totalReviews !== 1 ? 's' : ''}
+                            </Link>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              sentiments[rating.hospitalId].sentiment === 'positive' ? 'bg-green-100 text-green-800' :
+                              sentiments[rating.hospitalId].sentiment === 'negative' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {sentiments[rating.hospitalId].sentiment}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-400">No reviews yet</span>
+                        )}
                       </div>
                     </div>
                   ))
@@ -971,7 +1056,6 @@ export default function QualityRatings() {
               <ul className="space-y-2 text-sm text-green-50">
                 <li><Link href="/" className="hover:text-white transition-colors">Hospital Finder</Link></li>
                 <li><Link href="/" className="hover:text-white transition-colors">Anonymous Reporting</Link></li>
-                <li><Link href="/quality-ratings" className="hover:text-white transition-colors">Quality Ratings</Link></li>
               </ul>
             </div>
             <div>

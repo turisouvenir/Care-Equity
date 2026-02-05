@@ -94,7 +94,7 @@ export default function Statistics() {
                 Home
               </Link>
               <Link 
-                href="/quality-ratings-copy"
+                href="/quality-ratings"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
                 Ratings

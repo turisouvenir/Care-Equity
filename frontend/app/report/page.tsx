@@ -125,7 +125,7 @@ export default function ReportForm() {
         
         // Redirect after 2 seconds
         setTimeout(() => {
-          router.push('/quality-ratings-copy');
+          router.push('/quality-ratings');
         }, 2000);
       } else {
         toast.error(result.message || 'Failed to submit report. Please try again.');
@@ -161,7 +161,7 @@ export default function ReportForm() {
                 Home
               </Link>
               <Link 
-                href="/quality-ratings-copy"
+                href="/quality-ratings"
                 className="px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md text-base font-medium transition-all duration-200"
               >
                 Ratings
@@ -407,7 +407,6 @@ export default function ReportForm() {
               <ul className="space-y-2 text-sm text-green-50">
                 <li><Link href="/" className="hover:text-white transition-colors">Hospital Finder</Link></li>
                 <li><Link href="/report" className="hover:text-white transition-colors">Anonymous Reporting</Link></li>
-                <li><Link href="/quality-ratings" className="hover:text-white transition-colors">Quality Ratings</Link></li>
               </ul>
             </div>
             <div>
