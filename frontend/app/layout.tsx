@@ -13,14 +13,9 @@ export const metadata: Metadata = {
   title: "Care Equity",
   description: "Addressing inequities in maternal healthcare by empowering patients with data-driven insights. Report experiences, find safer hospitals, and help create equitable healthcare.",
   icons: {
-    icon: [
-      { url: '/icon.png', sizes: 'any' },
-      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icon.png', sizes: '96x96', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
   },
 };
 

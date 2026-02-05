@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { connectDB } from './config/database';
+import { connectDB, getDBStatus } from './config/database';
 import { Hospital } from './models/Hospital';
 import { CalculatedRating } from './models/CalculatedRating';
 import { PatientReport } from './models/PatientReport';
@@ -68,6 +68,16 @@ app.get('/', (req, res) => {
  */
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+/**
+ * GET /db-status
+ * Database connection status endpoint
+ * Returns MongoDB connection state
+ */
+app.get('/db-status', (req, res) => {
+  const dbStatus = getDBStatus();
+  res.json(dbStatus);
 });
 
 /**
