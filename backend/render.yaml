@@ -4,8 +4,8 @@ services:
     env: node
     plan: free
     rootDir: backend
-    buildCommand: cd backend && NODE_ENV=development npm ci && npm run build
-    startCommand: cd backend && npm start
+    buildCommand: NODE_ENV=development npm ci && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production

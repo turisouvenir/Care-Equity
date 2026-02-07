@@ -2,9 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { URL } from 'url';
 import { connectDB, getDBStatus } from './config/database';
 import { Hospital } from './models/Hospital';
-import { CalculatedRating } from './models/CalculatedRating';
+import { CalculatedRating, ICalculatedRating } from './models/CalculatedRating';
 import { PatientReport } from './models/PatientReport';
 import { Article } from './models/Article';
 
@@ -99,18 +100,18 @@ app.get('/ratings', async (req, res) => {
     const hospitals = await Hospital.find({}).lean();
     
     // Step 2: Fetch all calculated ratings from MongoDB
-    const ratings = await CalculatedRating.find({}).lean();
+    const ratings = await CalculatedRating.find({}).lean() as ICalculatedRating[];
     
     // Step 3: Create a Map for O(1) lookup performance
     // Maps hospitalId (e.g., "HOSP_001") to its rating object
     // This is faster than nested loops when joining data
-    const ratingMap = new Map(ratings.map(r => [r.hospitalId, r]));
+    const ratingMap = new Map<string, ICalculatedRating>(ratings.map(r => [r.hospitalId, r]));
     
     // Step 4: Join hospitals with their ratings
     // For each hospital, find its matching rating and combine the data
     const hospitalsWithRatings = hospitals.map(hospital => {
       // Look up the rating for this hospital (returns undefined if not found)
-      const rating = ratingMap.get(hospital._id);
+      const rating: ICalculatedRating | undefined = ratingMap.get(hospital._id);
       
       // Return combined object with hospital info + rating data
       // Use optional chaining (?.) and nullish coalescing (||) for safe defaults
