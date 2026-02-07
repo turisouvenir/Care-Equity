@@ -7,7 +7,7 @@
  * Note: In Next.js, NEXT_PUBLIC_* env vars are replaced at build time with their actual values.
  * This means they're available in both server and client code as string literals.
  */
-function getApiBase(): string {
+export function getApiBase(): string {
   // Check for environment variable (replaced at build time by Next.js)
   // In browser, this will be the actual value or undefined
   const envUrl = typeof process !== 'undefined' 

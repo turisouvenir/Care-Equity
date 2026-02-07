@@ -23,6 +23,7 @@ const PORT = process.env.PORT || 5001; // Default to 5001 if PORT not set
 // CORS (Cross-Origin Resource Sharing) middleware
 // Allows frontend (running on different port/domain) to make API requests
 app.use(cors({
+  
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, curl, same-origin)
     if (!origin) {
