@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { API_BASE } from '@/lib/api';
+import { getApiBase } from '@/lib/api';
 
 /**
  * Hospital Rating Interface
@@ -84,7 +84,7 @@ export default function HospitalDetail() {
       setLoading(true);
 
       // Fetch hospital rating
-      const ratingsResponse = await fetch(`${API_BASE}/ratings`);
+      const ratingsResponse = await fetch(`${getApiBase()}/ratings`);
       const ratingsResult = await ratingsResponse.json();
       
       if (ratingsResult.success && ratingsResult.data) {
@@ -95,14 +95,14 @@ export default function HospitalDetail() {
       }
 
       // Fetch reviews
-      const reviewsResponse = await fetch(`${API_BASE}/hospitals/${hospitalId}/reviews`);
+      const reviewsResponse = await fetch(`${getApiBase()}/hospitals/${hospitalId}/reviews`);
       const reviewsResult = await reviewsResponse.json();
       if (reviewsResult.success && reviewsResult.data) {
         setReviews(reviewsResult.data);
       }
 
       // Fetch sentiment
-      const sentimentResponse = await fetch(`${API_BASE}/hospitals/${hospitalId}/sentiment`);
+      const sentimentResponse = await fetch(`${getApiBase()}/hospitals/${hospitalId}/sentiment`);
       const sentimentResult = await sentimentResponse.json();
       if (sentimentResult.success && sentimentResult.data) {
         setSentiment(sentimentResult.data);

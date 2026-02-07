@@ -28,11 +28,16 @@ export default function FindHospitals() {
   const [hoveredHospital, setHoveredHospital] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Fetch hospitals from backend API
-   */
-  useEffect(() => {
-    const fetchHospitals = async () => {
+  const fetchHospitals = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const response = await fetch('/api/hospitals', { signal: controller.signal });
+      clearTimeout(timeoutId);
+      const text = await response.text();
+      let result: { success?: boolean; data?: Hospital[]; message?: string };
       try {
         setLoading(true);
         setError(null);
@@ -60,8 +65,19 @@ export default function FindHospitals() {
       } finally {
         setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error('Error fetching hospitals:', err);
+      if ((err as Error).name === 'AbortError') {
+        setError('Request took too long. Backend may be waking up. Tap Retry in 30 seconds.');
+      } else {
+        setError('Cannot reach server. Wait 30–60 seconds (backend may be waking) then tap Retry.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHospitals();
   }, []);
 

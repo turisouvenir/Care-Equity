@@ -38,6 +38,7 @@ function getApiBase(): string {
   return 'http://localhost:5001';
 }
 
+/** @deprecated Use getApiBase() at fetch time so the correct URL is used on all devices. */
 export const API_BASE = getApiBase();
 
 // Log API base for debugging (helps identify issues)

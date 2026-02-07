@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { API_BASE } from '@/lib/api';
+import { getApiBase } from '@/lib/api';
 
 /**
  * HospitalRating Interface
@@ -71,7 +71,7 @@ export default function QualityRatings() {
         setLoading(true); // Show loading spinner
         
         // Fetch data from backend API endpoint
-        const response = await fetch(`${API_BASE}/ratings`);
+        const response = await fetch(`${getApiBase()}/ratings`);
         const result = await response.json();
         
         // If API call was successful and data exists
@@ -117,7 +117,7 @@ export default function QualityRatings() {
     // Fetch sentiments in parallel
     const promises = hospitalRatings.map(async (rating) => {
       try {
-        const response = await fetch(`${API_BASE}/hospitals/${rating.hospitalId}/sentiment`);
+        const response = await fetch(`${getApiBase()}/hospitals/${rating.hospitalId}/sentiment`);
         const result = await response.json();
         if (result.success && result.data) {
           sentimentMap[rating.hospitalId] = result.data;

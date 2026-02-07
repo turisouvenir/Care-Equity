@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { API_BASE } from '@/lib/api';
+import { getApiBase } from '@/lib/api';
 
 /**
  * Article Interface
@@ -35,7 +35,7 @@ export default function Statistics() {
         setLoading(true);
         setError('');
         
-        const response = await fetch(`${API_BASE}/articles`);
+        const response = await fetch(`${getApiBase()}/articles`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

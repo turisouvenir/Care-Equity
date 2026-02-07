@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { API_BASE } from '@/lib/api';
+import { getApiBase } from '@/lib/api';
 
 /**
  * HospitalRating Interface
@@ -68,7 +68,7 @@ export default function QualityRatings() {
     const fetchRatings = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE}/ratings`);
+        const response = await fetch(`${getApiBase()}/ratings`);
         const result = await response.json();
         
         if (result.success && result.data) {
@@ -108,7 +108,7 @@ export default function QualityRatings() {
     // Fetch sentiments in parallel
     const promises = hospitalRatings.map(async (rating) => {
       try {
-        const response = await fetch(`${API_BASE}/hospitals/${rating.hospitalId}/sentiment`);
+        const response = await fetch(`${getApiBase()}/hospitals/${rating.hospitalId}/sentiment`);
         const result = await response.json();
         if (result.success && result.data) {
           sentimentMap[rating.hospitalId] = result.data;
@@ -137,7 +137,7 @@ export default function QualityRatings() {
       const fetchSelectedSentiment = async () => {
         try {
           setLoadingSelectedSentiment(true);
-          const response = await fetch(`${API_BASE}/hospitals/${selectedHospitalForChart}/sentiment`);
+          const response = await fetch(`${getApiBase()}/hospitals/${selectedHospitalForChart}/sentiment`);
           const result = await response.json();
           if (result.success && result.data) {
             setSelectedHospitalSentiment(result.data);
