@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { API_BASE } from '@/lib/api';
 
 /**
  * Hospital Interface
@@ -28,45 +27,46 @@ export default function FindHospitals() {
   const [hoveredHospital, setHoveredHospital] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Fetch hospitals from backend API
-   */
-  useEffect(() => {
-    const fetchHospitals = async () => {
+  const fetchHospitals = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const response = await fetch('/api/hospitals', { signal: controller.signal });
+      clearTimeout(timeoutId);
+      const text = await response.text();
+      let result: { success?: boolean; data?: Hospital[]; message?: string };
       try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`${API_BASE}/hospitals`);
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          setHospitals(result.data);
-        } else {
-          setError(result.message || 'Could not load hospitals.');
-        }
-      } catch (err) {
-        console.error('Error fetching hospitals:', err);
-        const message = err instanceof Error ? err.message : 'Network error';
-        setError(`Can't reach the server. If you're on mobile, wait 30–60 seconds and tap Retry (backend may be waking up).`);
-      } finally {
-        setLoading(false);
+        result = JSON.parse(text);
+      } catch {
+        setError(response.ok ? 'Invalid response from server.' : `Server error (${response.status}). Tap Retry.`);
+        return;
       }
-    };
+      if (result.success && Array.isArray(result.data)) {
+        setHospitals(result.data);
+      } else {
+        setError(result.message || 'Could not load hospitals. Tap Retry.');
+      }
+    } catch (err) {
+      console.error('Error fetching hospitals:', err);
+      if ((err as Error).name === 'AbortError') {
+        setError('Request took too long. Backend may be waking up. Tap Retry in 30 seconds.');
+      } else {
+        setError('Cannot reach server. Wait 30–60 seconds (backend may be waking) then tap Retry.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHospitals();
   }, []);
 
   const retryFetch = () => {
     setError(null);
-    setLoading(true);
-    fetch(`${API_BASE}/hospitals`)
-      .then((res) => res.json())
-      .then((result) => {
-        if (result.success && result.data) setHospitals(result.data);
-        else setError(result.message || 'Could not load hospitals.');
-      })
-      .catch(() => setError(`Can't reach the server. Wait a minute and tap Retry.`))
-      .finally(() => setLoading(false));
+    fetchHospitals();
   };
 
   /**
