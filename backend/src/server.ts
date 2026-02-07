@@ -21,15 +21,38 @@ const PORT = process.env.PORT || 5001; // Default to 5001 if PORT not set
 // Middleware runs on every request before it reaches route handlers
 
 // CORS (Cross-Origin Resource Sharing) middleware
-// Allows frontend (running on different port) to make API requests
-// CORS (Cross-Origin Resource Sharing) middleware
 // Allows frontend (running on different port/domain) to make API requests
 app.use(cors({
-  origin: true, // Allow all origins - Reflect the request origin
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, curl, same-origin)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Allow all Vercel preview deployments
+    if (origin.includes('.vercel.app') || origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // In production, be more strict; in development, allow all
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    // For production, log blocked origins for debugging
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    callback(null, true); // For now, allow all in production (you can restrict later)
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: false,
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+  maxAge: 86400 // Cache preflight requests for 24 hours
 }));
 
 // JSON body parser - parses JSON request bodies

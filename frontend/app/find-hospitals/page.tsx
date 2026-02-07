@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch, API_BASE } from '@/lib/api-client';
 
 /**
  * Hospital Interface
@@ -38,15 +39,31 @@ export default function FindHospitals() {
       const text = await response.text();
       let result: { success?: boolean; data?: Hospital[]; message?: string };
       try {
-        result = JSON.parse(text);
-      } catch {
-        setError(response.ok ? 'Invalid response from server.' : `Server error (${response.status}). Tap Retry.`);
-        return;
-      }
-      if (result.success && Array.isArray(result.data)) {
-        setHospitals(result.data);
-      } else {
-        setError(result.message || 'Could not load hospitals. Tap Retry.');
+        setLoading(true);
+        setError(null);
+        const response = await apiFetch('/hospitals', {
+          retries: 3,
+          retryDelay: 2000,
+          timeout: 60000, // 60 seconds for cold starts
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          setHospitals(result.data);
+        } else {
+          setError(result.message || 'Could not load hospitals.');
+        }
+      } catch (err) {
+        console.error('Error fetching hospitals:', err);
+        const message = err instanceof Error ? err.message : 'Network error';
+        setError(`Can't reach the server. The backend may be waking up (this can take 30-60 seconds on first load). Please wait a moment and tap Retry.`);
+      } finally {
+        setLoading(false);
       }
     } catch (err) {
       console.error('Error fetching hospitals:', err);
@@ -64,9 +81,26 @@ export default function FindHospitals() {
     fetchHospitals();
   }, []);
 
-  const retryFetch = () => {
+  const retryFetch = async () => {
     setError(null);
-    fetchHospitals();
+    setLoading(true);
+    try {
+      const response = await apiFetch('/hospitals', {
+        retries: 3,
+        retryDelay: 2000,
+        timeout: 60000,
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        setHospitals(result.data);
+      } else {
+        setError(result.message || 'Could not load hospitals.');
+      }
+    } catch (err) {
+      setError(`Can't reach the server. The backend may be waking up. Please wait 30-60 seconds and try again.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /**
