@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { getApiUrl } from '@/lib/api-config';
 
 /**
  * Hospital Rating Interface
@@ -83,7 +84,7 @@ export default function HospitalDetail() {
       setLoading(true);
 
       // Fetch hospital rating
-      const ratingsResponse = await fetch('http://localhost:5001/ratings');
+      const ratingsResponse = await fetch(getApiUrl('/ratings'));
       const ratingsResult = await ratingsResponse.json();
       
       if (ratingsResult.success && ratingsResult.data) {
@@ -94,14 +95,14 @@ export default function HospitalDetail() {
       }
 
       // Fetch reviews
-      const reviewsResponse = await fetch(`http://localhost:5001/hospitals/${hospitalId}/reviews`);
+      const reviewsResponse = await fetch(getApiUrl(`/hospitals/${hospitalId}/reviews`));
       const reviewsResult = await reviewsResponse.json();
       if (reviewsResult.success && reviewsResult.data) {
         setReviews(reviewsResult.data);
       }
 
       // Fetch sentiment
-      const sentimentResponse = await fetch(`http://localhost:5001/hospitals/${hospitalId}/sentiment`);
+      const sentimentResponse = await fetch(getApiUrl(`/hospitals/${hospitalId}/sentiment`));
       const sentimentResult = await sentimentResponse.json();
       if (sentimentResult.success && sentimentResult.data) {
         setSentiment(sentimentResult.data);

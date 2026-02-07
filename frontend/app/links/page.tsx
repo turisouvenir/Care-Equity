@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { getApiUrl } from '@/lib/api-config';
 
 /**
  * Article Interface
@@ -34,7 +35,7 @@ export default function Statistics() {
         setLoading(true);
         setError('');
         
-        const response = await fetch('http://localhost:5001/articles');
+        const response = await fetch(getApiUrl('/articles'));
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -56,7 +57,7 @@ export default function Statistics() {
         console.error('Error fetching articles:', error);
         // Check if it's a network error (Failed to fetch)
         if (error instanceof TypeError && error.message.includes('fetch')) {
-          setError('Cannot connect to backend server. Please ensure the backend is running on http://localhost:5001 and has been restarted to load the new articles endpoint.');
+          setError('Cannot connect to backend server. Please check your connection and ensure the backend server is running.');
         } else {
           const errorMessage = error instanceof Error 
             ? `Failed to load articles: ${error.message}` 

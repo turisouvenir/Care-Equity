@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '@/lib/api-config';
 
 /**
  * Hospital Interface
@@ -33,7 +34,7 @@ export default function FindHospitals() {
     const fetchHospitals = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5001/hospitals');
+        const response = await fetch(getApiUrl('/hospitals'));
         const result = await response.json();
         
         if (result.success && result.data) {

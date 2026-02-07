@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { getApiUrl } from '@/lib/api-config';
 
 /**
  * Hospital Interface
@@ -44,7 +45,7 @@ export default function ReportForm() {
     const fetchHospitals = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5001/hospitals');
+        const response = await fetch(getApiUrl('/hospitals'));
         const result = await response.json();
         
         if (result.success && result.data) {
@@ -98,7 +99,7 @@ export default function ReportForm() {
     try {
       setSubmitting(true);
       
-      const response = await fetch('http://localhost:5001/reports', {
+      const response = await fetch(getApiUrl('/reports'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
