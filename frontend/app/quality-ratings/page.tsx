@@ -58,6 +58,10 @@ export default function QualityRatings() {
   const [locations, setLocations] = useState<string[]>([]);               // Unique locations for dropdown
   const [sentiments, setSentiments] = useState<Record<string, HospitalSentiment>>({}); // Sentiment data by hospital ID
   const [loadingSentiments, setLoadingSentiments] = useState<Record<string, boolean>>({}); // Loading state for sentiments
+  const [selectedHospitalForChart, setSelectedHospitalForChart] = useState<string>('');
+  const [chartTab, setChartTab] = useState<string>('overview');
+  const [loadingSelectedSentiment, setLoadingSelectedSentiment] = useState<boolean>(false);
+  const [selectedHospitalSentiment, setSelectedHospitalSentiment] = useState<HospitalSentiment | null>(null);
 
   /**
    * useEffect: Fetch ratings from backend API
